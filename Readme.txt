@@ -75,6 +75,7 @@ if((Get-Command Get-TimeZone -ErrorAction SilentlyContinue) -ne $null){
 }
 $UnixTime = [datetime]"1970/01/01 $TimeOffset"
 $NictUri = "https://ntp-a1.nict.go.jp/cgi-bin/json"
+Set-Date $UnixTime.AddSeconds((Invoke-RestMethod -Uri https://ntp-a1.nict.go.jp/cgi-bin/json).st)
 
 # NICT に時刻同期する
 w32tm /config /syncfromflags:manual /manualpeerlist:ntp.nict.jp /update
