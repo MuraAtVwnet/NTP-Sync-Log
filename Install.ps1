@@ -26,9 +26,9 @@ $Dir = Get-WmiObject -query "Select * From Win32_Directory Where Name = 'C:\\NTP
 
 # スクリプトコピー
 $SourceScript = Join-Path $CurrentDir "*.ps1"
-move $SourceScript $InstallDir -Force
+copy $SourceScript $InstallDir -Force
 $SourceScript = Join-Path $CurrentDir "*.txt"
-move $SourceScript $InstallDir -Force
+copy $SourceScript $InstallDir -Force
 
 # スケジュールの登録
 $Script = Join-Path $InstallDir "ntp_diff_log.ps1"
