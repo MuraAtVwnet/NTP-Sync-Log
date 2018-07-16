@@ -2,8 +2,18 @@
 # 時刻同期ログキングスクリプトのスケジュール登録
 ###################################################
 
+# 管理権限で実行されていなかったらスクリプトを終了する
+if (-not(([Security.Principal.WindowsPrincipal] `
+	[Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole(`
+	[Security.Principal.WindowsBuiltInRole] "Administrator"`
+	))) {
+	echo "[FAIL] You must have administrative rights."
+	exit
+}
+
 $CurrentDir = Split-Path $MyInvocation.MyCommand.Path -Parent
 $InstallDir = "C:\NTP_Log"
+
 
 # ディレクトリ無かったら作る
 if( -not (Test-Path $InstallDir)){
