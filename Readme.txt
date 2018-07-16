@@ -3,9 +3,18 @@
 ■ これは何 ?
 現在時刻と、基準 NTP との時刻のズレを1分ごとにロギングします
 
+以下環境で動作確認しています。
+(Windows Server 2012 R2 以前はタイムゾーンが JST 前提)
+
+・Windows Server 2008 R2
+・Windows Server 2012 R2
+・Windows Server 2016
+
+Client OS でも動くと思います。
+
 ■ 設置方法
 適当なフォルダーにコピーして Install.ps1 を管理者権限で実行します
-C:\NTP_Log に一式移動し、同期ログ出力と過去ログ(1か月より前)のログを削除するスケジュールを登録します。
+C:\NTP_Log に一式コピーし、同期ログ出力と過去ログ(1か月より前)のログを削除するスケジュールを登録します。
 
 現在 NTP 同期が設定がされていない場合は、補助ツールの SyncNTP.ps1 を使うと NTP 同期設定が出来ます。
 
@@ -58,10 +67,14 @@ ForceNTPSync.ps1
 代表 NTP になっているドメインコントローラーの時刻同期先設定は SyncNTP.ps1 で設定出来ないので、以下コマンドで手動設定してください。
 
 # 現在時刻を合わせる
-$TimeZome = Get-TimeZone
-$TimeOffset = $TimeZome.BaseUtcOffset.ToString()
+if((Get-Command Get-TimeZone -ErrorAction SilentlyContinue) -ne $null){
+    $TimeZome = Get-TimeZone
+    $TimeOffset = $TimeZome.BaseUtcOffset.ToString()
+}else{
+    $TimeOffset = "09:00:00"
+}
 $UnixTime = [datetime]"1970/01/01 $TimeOffset"
-Set-Date $UnixTime.AddSeconds((Invoke-RestMethod -Uri https://ntp-a1.nict.go.jp/cgi-bin/json).st)
+$NictUri = "https://ntp-a1.nict.go.jp/cgi-bin/json"
 
 # NICT に時刻同期する
 w32tm /config /syncfromflags:manual /manualpeerlist:ntp.nict.jp /update
@@ -72,4 +85,5 @@ w32tm /resync
 http://www.vwnet.jp/Windows/WS08R2/NTP/w32time.html
 
 ■ Web Page
-
+NTP 同期状態ロギング
+http://www.vwnet.jp/Windows/PowerShell/2018071601/NTPSyncLog.htm
