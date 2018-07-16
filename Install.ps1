@@ -26,3 +26,5 @@ SCHTASKS /Create /tn "MURA\NTP Log" /tr "C:\Windows\System32\WindowsPowerShell\v
 
 $Script = Join-Path $InstallDir "RemoveLog.ps1"
 SCHTASKS /Create /tn "MURA\Remove NTP Log" /tr "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe $Script" /ru "SYSTEM" /sc DAILY /st "05:00" /F
+
+ii $InstallDir
