@@ -6,9 +6,8 @@
 以下環境で動作確認しています。
 (Windows Server 2012 R2 以前はタイムゾーンが JST 前提)
 
-・Windows Server 2008 R2
-・Windows Server 2012 R2
 ・Windows Server 2016
+・Windows Server 2012 R2
 
 Client OS でも動くと思います。
 
