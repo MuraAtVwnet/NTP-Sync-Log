@@ -44,6 +44,15 @@ function IsDomainMember(){
 # main
 ##########################################################################
 
+# 管理権限で実行されていなかったらスクリプトを終了する
+if (-not(([Security.Principal.WindowsPrincipal] `
+	[Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole(`
+	[Security.Principal.WindowsBuiltInRole] "Administrator"`
+	))) {
+	echo "[FAIL] You must have administrative rights."
+	exit
+}
+
 # 基準 NTP 指定がなかったら nict にする
 if( $StandardNTPServers.Count -eq 0 ){
 	[array]$StandardNTPServers = @("ntp.nict.jp")
