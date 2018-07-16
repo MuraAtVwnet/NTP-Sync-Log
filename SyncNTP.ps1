@@ -88,8 +88,14 @@ if( $Service.Status -eq "Stopped" ){
 }
 
 # 現在時刻を合わせる
-$TimeZome = Get-TimeZone
-$TimeOffset = $TimeZome.BaseUtcOffset.ToString()
+if((Get-Command Get-TimeZone -ErrorAction SilentlyContinue) -ne $null){
+	$TimeZome = Get-TimeZone
+	$TimeOffset = $TimeZome.BaseUtcOffset.ToString()
+}
+else{
+	# $TimeZome がサポートされていない時は JST キメキメ
+	$TimeOffset = "09:00:00"
+}
 $UnixTime = [datetime]"1970/01/01 $TimeOffset"
 $NictUri = "https://ntp-a1.nict.go.jp/cgi-bin/json"
 
