@@ -90,7 +90,7 @@ if( $Service.Status -eq "Stopped" ){
 # 現在時刻を合わせる
 if((Get-Command Get-TimeZone -ErrorAction SilentlyContinue) -ne $null){
 	$TimeZome = Get-TimeZone
-	$TimeOffset = $TimeZome.BaseUtcOffset.Hours
+	$TimeOffset = ($TimeZone.GetUtcOffset((Get-Date))).Hours
 }
 else{
 	# $TimeZome がサポートされていない時は JST キメキメ
