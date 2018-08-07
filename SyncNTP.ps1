@@ -88,16 +88,20 @@ if( $Service.Status -eq "Stopped" ){
 }
 
 # 現在時刻を合わせる
+$NictUri = "https://ntp-a1.nict.go.jp/cgi-bin/json"
 if((Get-Command Get-TimeZone -ErrorAction SilentlyContinue) -ne $null){
-	$TimeZome = Get-TimeZone
-	$TimeOffset = ($TimeZone.GetUtcOffset((Get-Date))).Hours
+	$UtcZome = Get-TimeZone -Id "UTC"
+	$UtcOffset = $UtcZome.BaseUtcOffset.Hours
+	$UtcUnixTime = ([datetime]"1970/01/01").AddHours($UtcOffset)
+	$UtcTime = $UtcUnixTime.AddSeconds((Invoke-RestMethod -Uri $NictUri).st)
+	$TimeZone = Get-TimeZone
+	$TimeOffset = ($TimeZone.GetUtcOffset(($UtcTime))).Hours
 }
 else{
-	# $TimeZome がサポートされていない時は JST キメキメ
+	# $TimeZone がサポートされていない時は JST キメキメ
 	$TimeOffset = 9
 }
 $UnixTime = ([datetime]"1970/01/01").AddHours($TimeOffset)
-$NictUri = "https://ntp-a1.nict.go.jp/cgi-bin/json"
 
 # NICT Web API 確認
 try{
