@@ -90,16 +90,6 @@ if( $Service.Status -eq "Stopped" ){
 # 現在時刻を合わせる
 $NictUri = "https://ntp-a1.nict.go.jp/cgi-bin/json"
 $UtcUnixTime = [datetime]"1970/01/01"
-if((Get-Command Get-TimeZone -ErrorAction SilentlyContinue) -ne $null){
-	$UtcTime = $UtcUnixTime.AddSeconds((Invoke-RestMethod -Uri $NictUri).st)
-	$LocalTimeZone = Get-TimeZone
-	$LocalTimeOffset = ($LocalTimeZone.GetUtcOffset(($UtcTime))).Hours
-}
-else{
-	# $TimeZone がサポートされていない時は JST キメキメ
-	$LocalTimeOffset = 9
-}
-$LocalUnixTime = $UtcUnixTime.AddHours($LocalTimeOffset)
 
 # NICT Web API 確認
 try{
@@ -110,6 +100,25 @@ catch{
 	$Error[0]
 	exit
 }
+
+# 時差を求める
+if((Get-Command Get-TimeZone -ErrorAction SilentlyContinue) -ne $null){
+	# Base Offset で現在時刻を求める
+	$LocalTimeZone = Get-TimeZone
+	$BaseUtcOffset = $LocalTimeZone.BaseUtcOffset.Hours
+	$BaseUtcOffsetUnixTime = $UtcUnixTime.AddHours($BaseUtcOffset)
+	$BaseUtcOffsetTime = $BaseUtcOffsetUnixTime.AddSeconds((Invoke-RestMethod -Uri $NictUri).st)
+
+	# サマータイムを考慮した Offset を求める
+	$LocalTimeOffset = ($LocalTimeZone.GetUtcOffset($BaseUtcOffsetTime)).Hours
+}
+else{
+	# $TimeZone がサポートされていない時は JST キメキメ
+	$LocalTimeOffset = 9
+}
+
+# 時差を考慮した 基準 Unix Time
+$LocalUnixTime = $UtcUnixTime.AddHours($LocalTimeOffset)
 
 # 現在時刻設定
 Set-Date $LocalUnixTime.AddSeconds((Invoke-RestMethod -Uri $NictUri).st)
