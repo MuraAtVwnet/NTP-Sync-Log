@@ -97,9 +97,9 @@ if((Get-Command Get-TimeZone -ErrorAction SilentlyContinue) -ne $null){
 }
 else{
 	# $TimeZone がサポートされていない時は JST キメキメ
-	$TimeOffset = 9
+	$LocalTimeOffset = 9
 }
-$LocalUnixTime = $UtcUnixTime.AddHours($TimeOffset)
+$LocalUnixTime = $UtcUnixTime.AddHours($LocalTimeOffset)
 
 # NICT Web API 確認
 try{
