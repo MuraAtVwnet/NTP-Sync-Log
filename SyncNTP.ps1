@@ -102,19 +102,19 @@ catch{
 }
 
 # Unix Time の TimeSpan を求める
-$UnixTimeSpan = ([System.TimeZoneInfo]::FindSystemTimeZoneById("UTC")).GetUtcOffset($UnixTime)
+$UnixTimeSpan = ([System.TimeZoneInfo]::FindSystemTimeZoneById("UTC")).GetUtcOffset($UtcUnixTime)
 
 # Unix Time の DateTimeOffset
-$UnixTimeDateTimeOffset = New-Object System.DateTimeOffset( $UnixTime, $UnixTimeSpan )
+$UnixTimeDateTimeOffset = New-Object System.DateTimeOffset( $UtcUnixTime, $UnixTimeSpan )
 
 # 現在の UTC
 $UtcNow = $UnixTimeDateTimeOffset.AddSeconds((Invoke-RestMethod -Uri $NictUri).st)
 
-# UTC を JST にする
-$JstNow = [System.TimeZoneInfo]::ConvertTimeBySystemTimeZoneId($UtcNow, "Tokyo Standard Time")
+# UTC を ローカル時刻 にする
+$LocalNow = [System.TimeZoneInfo]::ConvertTimeBySystemTimeZoneId($UtcNow, [System.TimeZoneInfo]::Local.Id)
 
 # 現在時刻のセット
-Set-Date $JstNow.DateTime
+Set-Date $LocalNow.DateTime
 
 # ドメインメンバーは NTP 同期先設定をしない
 if( IsDomainMember ){
